@@ -1,6 +1,6 @@
 {
   "name": "@se-oss/status-codes",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Strongly typed HTTP status utilities for converting between status phrases and numeric codes.",
   "keywords": [
     "http",
