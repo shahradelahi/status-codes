@@ -36,7 +36,7 @@ getStatusCode('OK'); // returns 200
 getStatusCode('CREATED'); // returns 201
 
 console.log(StatusCodes.FORBIDDEN); // prints 403
-console.log(StatusPhrases.IM_A_TEAPOT); // returns "I'm a teapot"
+console.log(StatusPhrases.IM_A_TEAPOT); // prints "I'm a teapot"
 ```
 
 ## 📚 Documentation
