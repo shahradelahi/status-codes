@@ -17,6 +17,8 @@ jobs:
           GITHUB_REF=${{ github.ref }}
           RELEASE_NAME=${GITHUB_REF#"refs/tags/"}
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          RELEASE_MESSAGE=$(git log -1 --pretty=%B | tail -n +3)
+          echo "RELEASE_MESSAGE=${RELEASE_MESSAGE}" >> $GITHUB_ENV
 
       - name: Publish release
         uses: actions/create-release@v1
@@ -25,6 +27,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: ${{ env.RELEASE_NAME }}
+          body: ${{ env.RELEASE_MESSAGE }}
           draft: false
           prerelease: false
 
