@@ -75,7 +75,7 @@ async function main(): Promise<void> {
 
   const project = new Project();
 
-  const codesFile = project.createSourceFile('src/generated/status-codes.ts', undefined, {
+  const codesFile = project.createSourceFile('src/generated/codes.ts', undefined, {
     overwrite: true,
   });
   codesFile.addVariableStatement({
@@ -101,7 +101,7 @@ async function main(): Promise<void> {
   });
   await codesFile.save();
 
-  const phrasesFile = project.createSourceFile('src/generated/status-phrases.ts', undefined, {
+  const phrasesFile = project.createSourceFile('src/generated/phrases.ts', undefined, {
     overwrite: true,
   });
   phrasesFile.addVariableStatement({
@@ -127,6 +127,151 @@ async function main(): Promise<void> {
     ],
   });
   await phrasesFile.save();
+
+  const deprecatedCodes = detailedStatuses.filter((status) => status.isDeprecated);
+  const experimentalCodes = detailedStatuses.filter((status) => status.isExperimental);
+
+  // Generate Utilities
+  const utilityFile = project.createSourceFile('src/generated/utils.ts', undefined, {
+    overwrite: true,
+  });
+
+  // Only add isDeprecated and isExperimental to the utility file if they are used
+  utilityFile.addFunction({
+    name: 'isDeprecatedStatusCode',
+    isExported: true,
+    returnType: 'code is DeprecatedStatusCode',
+    parameters: [
+      {
+        name: 'code',
+        type: 'StatusCode | number',
+      },
+    ],
+    statements: (writer) => {
+      writer.writeLine(
+        `return typeof (code as unknown) === 'number' && (${deprecatedCodes.map((status) => `code === ${status.code}`).join(' || ')});`
+      );
+    },
+  });
+
+  utilityFile.addFunction({
+    name: 'isExperimentalStatusCode',
+    isExported: true,
+    returnType: 'code is ExperimentalStatusCode',
+    parameters: [
+      {
+        name: 'code',
+        type: 'StatusCode | number',
+      },
+    ],
+    statements: (writer) => {
+      writer.writeLine(
+        `return typeof (code as unknown) === 'number' && (${experimentalCodes.map((status) => `code === ${status.code}`).join(' || ')});`
+      );
+    },
+  });
+
+  // add import status ExperimentalStatusCode and DeprecatedStatusCode
+  utilityFile.addImportDeclaration({
+    moduleSpecifier: '@/typings',
+    namedImports: ['StatusCode'],
+    isTypeOnly: true,
+  });
+
+  utilityFile.addImportDeclaration({
+    moduleSpecifier: './types',
+    namedImports: ['DeprecatedStatusCode', 'ExperimentalStatusCode'],
+    isTypeOnly: true,
+  });
+
+  await utilityFile.save();
+
+  // Create status types
+  const statusTypesFile = project.createSourceFile('src/generated/types.ts', undefined, {
+    overwrite: true,
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'InfoStatusCode',
+    type: (writer) => {
+      writer.writeLine(
+        detailedStatuses
+          .filter((status) => status.code.startsWith('1'))
+          .map((status) => status.code)
+          .join(' | ')
+      );
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'SuccessStatusCode',
+    type: (writer) => {
+      writer.writeLine(
+        detailedStatuses
+          .filter((status) => status.code.startsWith('2'))
+          .map((status) => status.code)
+          .join(' | ')
+      );
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'DeprecatedStatusCode',
+    type: (writer) => {
+      writer.writeLine(deprecatedCodes.map((status) => status.code).join(' | '));
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'ExperimentalStatusCode',
+    type: (writer) => {
+      writer.writeLine(experimentalCodes.map((status) => status.code).join(' | '));
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'RedirectStatusCode',
+    type: (writer) => {
+      writer.writeLine(
+        detailedStatuses
+          .filter((status) => status.code.startsWith('3'))
+          .map((status) => status.code)
+          .join(' | ')
+      );
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'ClientErrorStatusCode',
+    type: (writer) => {
+      writer.writeLine(
+        detailedStatuses
+          .filter((status) => status.code.startsWith('4'))
+          .map((status) => status.code)
+          .join(' | ')
+      );
+    },
+  });
+
+  statusTypesFile.addTypeAlias({
+    isExported: true,
+    name: 'ServerErrorStatusCode',
+    type: (writer) => {
+      writer.writeLine(
+        detailedStatuses
+          .filter((status) => status.code.startsWith('5'))
+          .map((status) => status.code)
+          .join(' | ')
+      );
+    },
+  });
+  await statusTypesFile.save();
 }
 
 main();

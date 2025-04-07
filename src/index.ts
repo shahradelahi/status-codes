@@ -1,25 +1,14 @@
-import { StatusCodes } from './generated/status-codes';
-import { StatusPhrases } from './generated/status-phrases';
+import { StatusCodes } from '@/generated/codes';
+import { StatusPhrases } from '@/generated/phrases';
+import type {
+  ClientErrorStatusCode,
+  InfoStatusCode,
+  RedirectStatusCode,
+  ServerErrorStatusCode,
+  SuccessStatusCode,
+} from '@/generated/types';
 
-export type Status = keyof typeof StatusCodes;
-
-/**
- * Type alias for status codes.
- *
- * @example
- *
- * const teapot: StatusCode<'IM_A_TEAPOT'> = 418;
- */
-export type StatusCode<T extends Status = Status> = (typeof StatusCodes)[T];
-
-/**
- * Type alias for status phrases.
- *
- * @example
- *
- * const teapot: StatusPhrase<'IM_A_TEAPOT'> = "I'm a teapot";
- */
-export type StatusPhrase<T extends Status = Status> = (typeof StatusPhrases)[T];
+import type { Status, StatusCode, StatusPhrase } from './typings';
 
 /**
  * Returns the HTTP status code for a given status phrase.
@@ -101,4 +90,69 @@ export function getStatusPhrase<
   throw new TypeError(`Status code is not a number or string. Received: ${code}`);
 }
 
+/**
+ * Check if status is informational (100–199).
+ *
+ * @example isInfoStatusCode(102) // true
+ */
+export function isInfoStatusCode(code: StatusCode | number): code is InfoStatusCode {
+  return typeof (code as unknown) === 'number' && code >= 100 && code <= 199;
+}
+
+/**
+ * Check if status is success (200–299).
+ *
+ * @example isSuccessStatusCode(201) // true
+ */
+export function isSuccessStatusCode(code: StatusCode | number): code is SuccessStatusCode {
+  return typeof (code as unknown) === 'number' && code >= 200 && code <= 299;
+}
+
+/**
+ * Check if status is redirect (300–399).
+ *
+ * @example isRedirectStatusCode(301) // true
+ */
+export function isRedirectStatusCode(code: StatusCode | number): code is RedirectStatusCode {
+  return typeof (code as unknown) === 'number' && code >= 300 && code <= 399;
+}
+
+/**
+ * Check if status is client error (400–499).
+ *
+ * @example isClientErrorStatusCode(404) // true
+ */
+export function isClientErrorStatusCode(code: StatusCode | number): code is ClientErrorStatusCode {
+  return typeof (code as unknown) === 'number' && code >= 400 && code <= 499;
+}
+
+/**
+ * Check if status is server error (500–599).
+ *
+ * @example isServerErrorStatusCode(500) // true
+ */
+export function isServerErrorStatusCode(code: StatusCode | number): code is ServerErrorStatusCode {
+  return typeof (code as unknown) === 'number' && code >= 500 && code <= 599;
+}
+
+/**
+ * Check if status has no content (101, 204, 205, 304).
+ *
+ * @example isContentlessStatusCode(204) // true
+ */
+export function isContentlessStatusCode(code: StatusCode | number): code is ContentlessStatusCode {
+  return (
+    typeof (code as unknown) === 'number' &&
+    (code === 101 || code === 204 || code === 205 || code === 304)
+  );
+}
+
 export { StatusCodes, StatusPhrases };
+export { isDeprecatedStatusCode, isExperimentalStatusCode } from './generated/utils';
+
+// -- Typings -------------------------
+
+export type ContentlessStatusCode = 101 | 204 | 205 | 304;
+
+export type * from './generated/types';
+export type { Status, StatusCode, StatusPhrase } from './typings';
