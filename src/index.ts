@@ -66,7 +66,7 @@ export function getStatusCode<
  * @throws {TypeError} If input is not valid or code is unknown
  */
 export function getStatusPhrase<
-  T extends Status | StatusCode,
+  T extends Status | StatusCode | number,
   C extends Status = T extends Status
     ? T
     : T extends StatusCode
@@ -78,7 +78,7 @@ export function getStatusPhrase<
           : never
         : never
       : never,
-  U = C extends Status ? (typeof StatusPhrases)[C] : never,
+  U = C extends Status ? (typeof StatusPhrases)[C] : StatusPhrase,
 >(code: T): U {
   if (typeof (code as unknown) === 'string') {
     const phrase = StatusCodes[code as Status] as U;
