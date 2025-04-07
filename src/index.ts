@@ -147,12 +147,22 @@ export function isContentlessStatusCode(code: StatusCode | number): code is Cont
   );
 }
 
+/**
+ * Check if status can have content.
+ *
+ * @example isContentfulStatusCode(200) // true
+ */
+export function isContentfulStatusCode(code: StatusCode | number): code is ContentlessStatusCode {
+  return !isContentlessStatusCode(code);
+}
+
 export { StatusCodes, StatusPhrases };
 export { isDeprecatedStatusCode, isExperimentalStatusCode } from './generated/utils';
 
 // -- Typings -------------------------
 
 export type ContentlessStatusCode = 101 | 204 | 205 | 304;
+export type ContentfulStatusCode = Exclude<StatusCode, ContentlessStatusCode>;
 
 export type * from './generated/types';
 export type { Status, StatusCode, StatusPhrase } from './typings';
