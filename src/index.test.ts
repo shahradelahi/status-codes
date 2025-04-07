@@ -55,9 +55,7 @@ describe('HTTP Status Code Utils', () => {
     });
 
     it('should throw TypeError for invalid status codes', () => {
-      // @ts-expect-error Testing invalid input
       expect(() => getStatusPhrase(999)).to.throw(TypeError);
-      // @ts-expect-error Testing invalid input
       expect(() => getStatusPhrase(999)).to.throw('Status code is not known. Received: 999');
     });
 
