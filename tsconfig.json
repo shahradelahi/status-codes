@@ -7,7 +7,11 @@
     "module": "esnext",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
   "exclude": ["node_modules", "dist"]
