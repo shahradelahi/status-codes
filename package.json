@@ -45,7 +45,7 @@
   "devDependencies": {
     "@shahrad/eslint-config": "^1.0.0",
     "@shahrad/prettier-config": "^1.2.2",
-    "@sindresorhus/tsconfig": "^7.0.0",
+    "@sindresorhus/tsconfig": "^8.0.0",
     "@types/chai": "^5.2.1",
     "@types/cheerio": "^0.22.35",
     "@types/mocha": "^10.0.10",
